@@ -1,0 +1,10 @@
+[package]
+name = "strs"
+version = "0.1.0"
+description = "A modern replacement for strings"
+authors = ["RJ Rybarczyk <rj@rybar.tech>"]
+license     = "CC0-1.0"
+homepage    = "https://github.com/rrybarczyk/strs"
+readme      = "README.md"
+
+[dependencies]
