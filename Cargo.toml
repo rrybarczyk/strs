@@ -6,5 +6,7 @@ authors = ["RJ Rybarczyk <rj@rybar.tech>"]
 license     = "CC0-1.0"
 homepage    = "https://github.com/rrybarczyk/strs"
 readme      = "README.md"
+edition     = "2018"
 
 [dependencies]
+structopt = "0.2.14"

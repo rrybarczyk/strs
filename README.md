@@ -3,6 +3,6 @@
 
 Example:
 ```
+$ cargo build --release
 $ cat target/release/strs | strs
 ```
-
