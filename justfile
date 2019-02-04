@@ -6,9 +6,9 @@ d:
 	cargo build
 	cat target/debug/strs | ./target/debug/strs
 
-d-wc: 
+publish: update-readme
 	cargo build
-	cat target/debug/strs | ./target/debug/strs | wc -l
+	cargo publish
 
 update-readme:
 	echo '# strs' > README.md

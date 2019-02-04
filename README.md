@@ -2,9 +2,9 @@
 *strs* is a modern alternative to [*strings*](https://linux.die.net/man/1/strings).
 
 ```
-strs 0.1.1
+strs 0.1.3
 RJ Rybarczyk <rj@rybar.tech>
-A modern replacement for strings
+A modern alternative for strings
 
 USAGE:
     strs [OPTIONS] [FILE]...

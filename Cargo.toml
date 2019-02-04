@@ -1,6 +1,6 @@
 [package]
 name = "strs"
-version = "0.1.2"
+version = "0.1.3"
 description = "A modern alternative for strings"
 authors = ["RJ Rybarczyk <rj@rybar.tech>"]
 license     = "CC0-1.0"
