@@ -1,8 +1,9 @@
-use std::io::{self, Read};
-use std::fs::File;
-use std::path::PathBuf;
+use std::{
+    fs::File,
+    io::{self, Read},
+    path::PathBuf,
+};
 use structopt::StructOpt;
-
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "strs")]
@@ -15,26 +16,24 @@ struct Opt {
     files: Vec<PathBuf>,
 }
 
-
-#[derive(Debug, PartialEq)]
-pub enum AppError {
-    IoError(String),
+#[derive(Debug)]
+pub enum Error {
+    Io(io::Error),
 }
 
-impl From<io::Error> for AppError {
-    fn from (error: io::Error) -> Self {
-        AppError::IoError(error.to_string())
+impl From<io::Error> for Error {
+    fn from(error: io::Error) -> Self {
+        Error::Io(error)
     }
 }
 
-
-fn print_strs(number: usize, handle: &mut Read) -> Result<(), AppError> {
+fn print_strs(number: usize, handle: &mut Read) -> Result<(), Error> {
     let mut char_run = String::new();
-    for byte_result in handle.bytes() {
-        // handle.bytes() returns Result. ? gets actual byte
-        let byte = byte_result?;
+    for byte in handle.bytes() {
+        // handle.bytes() returns Result. ? gets actual byte value
+        let byte = byte?;
 
-        if byte as u32 >= '!' as u32 && byte as u32 <= '~' as u32 {
+        if byte >= b'!' && byte <= b'~' {
             char_run.push(byte as char);
         } else {
             if char_run.len() >= number {
@@ -46,8 +45,7 @@ fn print_strs(number: usize, handle: &mut Read) -> Result<(), AppError> {
     Ok(())
 }
 
-pub fn run() -> Result<(), AppError> {
-
+pub fn run() -> Result<(), Error> {
     let opt = Opt::from_args();
 
     for path in opt.files {
@@ -58,22 +56,20 @@ pub fn run() -> Result<(), AppError> {
     Ok(())
 }
 
-pub fn open_file(path: &str) -> Result<File, AppError> {
+pub fn open_file(path: &str) -> Result<File, Error> {
     let file = File::open(path)?;
     Ok(file)
-
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs::File;
     use super::*;
-    // use INVALID_FILE_READ;
+    use std::fs::File;
+
+    /// Tests error if file does not exist.
     #[test]
+    #[should_panic(expected = "No such file or directory")]
     fn app_error_from_read_error() {
-        // try to import a nonexistant file
-        // assert that error is of type AppError
-        let path = "./dne.file";
-        assert_eq!(open_file(path).unwrap_err(), AppError::IoError("No such file or directory (os error 2)".to_string()));
+        open_file("./dne.file").unwrap();
     }
 }

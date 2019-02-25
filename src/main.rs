@@ -1,7 +1,7 @@
 use strs;
-use strs::AppError;
+use strs::Error;
 
-fn main() -> Result<(), AppError> {
+fn main() -> Result<(), Error> {
     strs::run()?;
     Ok(())
 }
