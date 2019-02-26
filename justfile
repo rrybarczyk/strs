@@ -1,10 +1,10 @@
+d: 
+	cargo build 
+	cargo run target/debug/strs
+
 r: 
 	cargo build --release
-	cat target/release/strs | ./target/release/strs
-
-d: 
-	cargo build
-	cat target/debug/strs | ./target/debug/strs
+	cargo run --release target/release/strs ./target/release/strs
 
 publish: update-readme
 	cargo build

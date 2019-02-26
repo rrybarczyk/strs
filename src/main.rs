@@ -1,7 +1,5 @@
 use strs;
-use strs::Error;
 
-fn main() -> Result<(), Error> {
-    strs::run()?;
-    Ok(())
+fn main() {
+    strs::run().unwrap();
 }
