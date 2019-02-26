@@ -4,7 +4,7 @@ use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "strs")]
-struct Opt {
+struct Config {
     /// Minimum string length
     #[structopt(
         short = "n",
@@ -49,7 +49,7 @@ impl std::str::FromStr for OffsetFormat {
     fn from_str(s: &str) -> Result<OffsetFormat, ArgError> {
         match s {
             "d" => Ok(OffsetFormat::Decimal),
-            "h" => Ok(OffsetFormat::Hexadecimal),
+            "x" => Ok(OffsetFormat::Hexadecimal),
             "o" => Ok(OffsetFormat::Octal),
             _ => {
                 let details = "Offset must be 'd' (decimal), 'h' (hexadecimal), or 'o' (octal).";
@@ -61,30 +61,43 @@ impl std::str::FromStr for OffsetFormat {
     }
 }
 
-fn search_strs(number: usize, handle: &mut Read) -> Result<(), Error> {
-    let mut char_run = String::new();
-    for byte in handle.bytes() {
-        // handle.bytes() returns Result. ? gets actual byte value
-        let byte = byte?;
+impl Config {
+    fn search_strs(&self, handle: &mut Read) -> Result<(), Error> {
+        let mut char_run = String::new();
+        let mut offset_count = 0;
 
-        if byte >= b'!' && byte <= b'~' {
-            char_run.push(byte as char);
-        } else {
-            if char_run.len() >= number {
-                println!("{}", char_run);
+        for byte in handle.bytes() {
+            // handle.bytes() returns Result. ? gets actual byte value
+            let byte = byte?;
+
+            if byte >= b'!' && byte <= b'~' {
+                char_run.push(byte as char);
+            } else {
+                if char_run.len() >= self.number {
+                    match &self.offset {
+                        Some(OffsetFormat::Decimal) => println!("{}\t{}", offset_count, char_run),
+                        Some(OffsetFormat::Hexadecimal) => {
+                            println!("{:x}\t{}", offset_count, char_run)
+                        }
+                        Some(OffsetFormat::Octal) => println!("{:o}\t{}", offset_count, char_run),
+                        None => println!("{}", char_run),
+                    };
+                }
+                char_run.clear();
             }
-            char_run.clear();
+            offset_count += 1;
         }
+
+        Ok(())
     }
-    Ok(())
 }
 
 pub fn run() -> Result<(), Error> {
-    let opt = Opt::from_args();
+    let opt = Config::from_args();
 
-    for path in opt.files {
+    for path in &opt.files {
         let mut file = File::open(path)?;
-        search_strs(opt.number, &mut file)?;
+        opt.search_strs(&mut file)?;
     }
 
     Ok(())

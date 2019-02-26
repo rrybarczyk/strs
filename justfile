@@ -1,6 +1,14 @@
 d: 
 	cargo build 
-	cargo run target/debug/strs
+	cargo run target/debug/strs -o d
+
+d-o: 
+	cargo build 
+	cargo run target/debug/strs -o o
+
+d-x: 
+	cargo build 
+	cargo run target/debug/strs -o x
 
 r: 
 	cargo build --release
