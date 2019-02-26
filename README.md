@@ -14,8 +14,15 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-    -n, --number <number>     [default: 4]
+    -n, --number <number>    Specify the minimum string length, where the number argument is a positive decimal integer.
+                             [default: 4]
+    -o, --offset <offset>    Write each string preceded by its byte offset from the start of the file. The format shall
+                             be dependent on the single character used as the format option-argument:
+                             
+                             	d	The offset shall be written in decimal. [default]
+                             	o	The offset shall be written in octal.
+                             	x	The offset shall be written in hexadecimal.
 
 ARGS:
-    <FILE>...    Files to process
+    <FILE>...    Specify the files to process.
 ```
