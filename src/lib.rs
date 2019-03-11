@@ -1,4 +1,4 @@
 mod run;
-mod runtime_error;
+mod error;
 
 pub use crate::run::run;

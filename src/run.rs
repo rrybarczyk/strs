@@ -1,4 +1,4 @@
-use crate::runtime_error::{ArgError, Error};
+use crate::error::{Error};
 use std::{fs::File, io::Read, path::PathBuf};
 use structopt::StructOpt;
 
@@ -45,15 +45,15 @@ impl std::default::Default for OffsetFormat {
 }
 
 impl std::str::FromStr for OffsetFormat {
-    type Err = ArgError;
-    fn from_str(s: &str) -> Result<OffsetFormat, ArgError> {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<OffsetFormat, Error> {
         match s {
             "d" => Ok(OffsetFormat::Decimal),
             "x" => Ok(OffsetFormat::Hexadecimal),
             "o" => Ok(OffsetFormat::Octal),
             _ => {
                 let details = "Offset must be 'd' (decimal), 'h' (hexadecimal), or 'o' (octal).";
-                Err(ArgError::InvalidArgs {
+                Err(Error::InvalidArgs {
                     details: details.to_string(),
                 })
             }
@@ -95,7 +95,16 @@ pub fn run() -> Result<(), Error> {
 
     for path in &opt.files {
         let mut file = File::open(path)?;
-        search_strs(opt.number, &opt.offset, &mut file);
+        match search_strs(opt.number, &opt.offset, &mut file) {
+            Ok(()) => (),
+            Err(_) => {
+                let file_name = path.to_str();
+                match file_name {
+                    Some(path)  => eprintln!("no strings found in file {}", path),
+                    None        => eprintln!("no strings found in file whose name i cannot print right now"),
+                }
+            },
+        }
     }
 
     Ok(())
