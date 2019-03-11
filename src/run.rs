@@ -61,35 +61,33 @@ impl std::str::FromStr for OffsetFormat {
     }
 }
 
-impl Config {
-    fn search_strs(&self, handle: &mut Read) -> Result<(), Error> {
-        let mut char_run = String::new();
-        let mut offset_count = 0;
+fn search_strs(number:usize, offset: &Option<OffsetFormat>, handle: &mut Read) -> Result<(), Error> {
+    let mut char_run = String::new();
+    let mut offset_count = 0;
 
-        for byte in handle.bytes() {
-            // handle.bytes() returns Result. ? gets actual byte value
-            let byte = byte?;
+    for byte in handle.bytes() {
+        // handle.bytes() returns Result. ? gets actual byte value
+        let byte = byte?;
 
-            if byte >= b'!' && byte <= b'~' {
-                char_run.push(byte as char);
-            } else {
-                if char_run.len() >= self.number {
-                    match &self.offset {
-                        Some(OffsetFormat::Decimal) => println!("{}\t{}", offset_count, char_run),
-                        Some(OffsetFormat::Hexadecimal) => {
-                            println!("{:x}\t{}", offset_count, char_run)
-                        }
-                        Some(OffsetFormat::Octal) => println!("{:o}\t{}", offset_count, char_run),
-                        None => println!("{}", char_run),
-                    };
-                }
-                char_run.clear();
+        if byte >= b'!' && byte <= b'~' {
+            char_run.push(byte as char);
+        } else {
+            if char_run.len() >= number {
+                match offset {
+                    Some(OffsetFormat::Decimal) => println!("{}\t{}", offset_count, char_run),
+                    Some(OffsetFormat::Hexadecimal) => {
+                        println!("{:x}\t{}", offset_count, char_run)
+                    }
+                    Some(OffsetFormat::Octal) => println!("{:o}\t{}", offset_count, char_run),
+                    None => println!("{}", char_run),
+                };
             }
-            offset_count += 1;
+            char_run.clear();
         }
-
-        Ok(())
+        offset_count += 1;
     }
+
+    Ok(())
 }
 
 pub fn run() -> Result<(), Error> {
@@ -97,7 +95,7 @@ pub fn run() -> Result<(), Error> {
 
     for path in &opt.files {
         let mut file = File::open(path)?;
-        opt.search_strs(&mut file)?;
+        search_strs(opt.number, &opt.offset, &mut file);
     }
 
     Ok(())
